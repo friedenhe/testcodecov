@@ -4,9 +4,5 @@ pip install coverage
 cd simpleFoam && wmake && cd -
 cd pitzDaily && blockMesh && decomposePar && mpirun -np 4 simpleFoamTest -parallel && cd -
 
-cd python && mpirun -np 4 python runScript.py && cd -
+cd python && mpirun --oversubscribe -np 4 coverage run runScript.py && cd - 
 cd python && coverage combine && coverage xml && cp -r coverage.xml ../ && cd -
-
-export CODECOV_TOKEN=106b39c2-f77a-4c69-92ab-69608b535f8d
-
-bash <(curl -s https://codecov.io/bash)
