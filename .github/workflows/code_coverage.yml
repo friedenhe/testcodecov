@@ -11,6 +11,7 @@ env:
   DOCKER_OF_ADF_BASHRC: '/home/dafoamuser/dafoam/OpenFOAM/OpenFOAM-v1812-ADF/etc/bashrc'
   DOCKER_OF_ADR_BASHRC: '/home/dafoamuser/dafoam/OpenFOAM/OpenFOAM-v1812-ADR/etc/bashrc'
 
+
 jobs:
   code_coverage:
     runs-on: ubuntu-18.04
@@ -26,10 +27,8 @@ jobs:
             args: 'incompressible'
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: 3.6
+    - uses: actions/checkout@v3
+    - uses: codecov/codecov-action@v3
     - name: Create the docker container and run the tests
       run: |
         docker pull dafoam/opt-packages:${{env.DOCKER_TAG}}
@@ -46,4 +45,4 @@ jobs:
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && pip install ."
         docker exec -i -e DF_CHECK_COVERAGE=1 regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && ./Allrun ${{matrix.args}}"
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && coverage combine && coverage xml && echo dafoamuser | sudo -S cp -r coverage.xml ${{env.DOCKER_MOUNT_DIR}}/"
-        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/src/adjoint && cp -r ../include ./Make/linux*/DASolver/ && cp -r ../include ./Make/linux*/ && export CODECOV_TOKEN=106b39c2-f77a-4c69-92ab-69608b535f8d && bash <(curl -s https://codecov.io/env) && curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov"
+        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/src/adjoint && cp -r ../include ./Make/linux*/DASolver/ && cp -r ../include ./Make/linux*/ && export CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} && bash <(curl -s https://codecov.io/env) && curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov"
