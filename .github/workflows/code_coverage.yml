@@ -28,7 +28,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v1.0.5
       with:
         token: ${{secrets.CODECOV_TOKEN}}
     - name: Create the docker container and run the tests
