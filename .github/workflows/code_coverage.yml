@@ -3,7 +3,7 @@ name: codecov
 on: [push, pull_request]
 
 env:
-  REPO_NAME: 'testCodeCov'
+  REPO_NAME: 'testcodecov'
   DOCKER_WORKING_DIR: '/home/dafoamuser/dafoam/$REPO_NAME'
   DOCKER_MOUNT_DIR: '/home/dafoamuser/mount/$REPO_NAME'
   DOCKER_TAG: 'v2.0.4'
