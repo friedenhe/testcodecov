@@ -38,6 +38,4 @@ jobs:
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && ./Allrun"
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && gcov -o simpleFoam/Make/linux64GccDPInt32Opt/ simpleFoam/simpleFoam.C"
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && echo dafoamuser | sudo -S cp -r * ${{env.DOCKER_MOUNT_DIR}}"
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov
+        bash <(curl -s https://codecov.io/bash)
