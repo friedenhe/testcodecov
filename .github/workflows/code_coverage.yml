@@ -6,7 +6,7 @@ env:
   REPO_NAME: 'testcodecov'
   DOCKER_WORKING_DIR: '/home/dafoamuser/dafoam/repos'
   DOCKER_MOUNT_DIR: '/home/dafoamuser/mount/$REPO_NAME'
-  DOCKER_TAG: 'v3.0.4'
+  DOCKER_TAG: 'tests'
   DOCKER_ENV_FILE: '/home/dafoamuser/dafoam/loadDAFoam.sh'
   DOCKER_OF_ADF_BASHRC: '/home/dafoamuser/dafoam/OpenFOAM/OpenFOAM-v1812-ADF/etc/bashrc'
   DOCKER_OF_ADR_BASHRC: '/home/dafoamuser/dafoam/OpenFOAM/OpenFOAM-v1812-ADR/etc/bashrc'
@@ -28,8 +28,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: codecov/codecov-action@v1.5.0
     - name: Create the docker container and run the tests
+      env: # Or as an environment variable
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         docker pull dafoam/opt-packages:${{env.DOCKER_TAG}}
         docker run -i -d -u dafoamuser --name regtest -v $GITHUB_WORKSPACE:${{env.DOCKER_MOUNT_DIR}} dafoam/opt-packages:${{env.DOCKER_TAG}} /bin/bash
@@ -45,6 +46,5 @@ jobs:
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && pip install ."
         docker exec -i -e DF_CHECK_COVERAGE=1 regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && ./Allrun ${{matrix.args}}"
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && coverage combine && coverage xml && echo dafoamuser | sudo -S cp -r coverage.xml ${{env.DOCKER_MOUNT_DIR}}/"
-        docker exec -i -e CI=true regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/src/adjoint && cp -r ../include ./Make/linux*/DASolver/ && cp -r ../include ./Make/linux*/ && echo dafoamuser | sudo -S cp -r ../adjoint ${{env.DOCKER_MOUNT_DIR}}/"
-        bash <(curl -s https://codecov.io/bash)
+        docker exec -i -e CI=true regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/src/adjoint && cp -r ../include ./Make/linux*/DASolver/ && cp -r ../include ./Make/linux*/ && echo dafoamuser | sudo -S cp -r ../adjoint ${{env.DOCKER_MOUNT_DIR}}/ && echo $CODECOV_TOKEN && bash <(curl -s https://codecov.io/bash)"
         
