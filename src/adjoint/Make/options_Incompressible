@@ -1,5 +1,5 @@
 EXE_INC = \
-    -std=c++11 \
+    -std=c++11 -fprofile-arcs -ftest-coverage \
     -Wno-old-style-cast \
     -Wno-conversion-null \
     -Wno-deprecated-copy \
@@ -19,7 +19,7 @@ EXE_INC = \
     -I$(LIB_SRC)/dynamicMesh/lnInclude \
     -I$(LIB_SRC)/fvOptions/lnInclude\
     -I$(LIB_SRC)/OpenFOAM/lnInclude \
-    -I../include \
+    -Iinclude \
     -I$(PETSC_DIR)/include \
     -I$(PETSC_DIR)/$(PETSC_ARCH)/include \
     -I$(MPI_ARCH_PATH)/include \
