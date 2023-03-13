@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+pip install coverage
+cd simpleFoam && wmake && cd -
+cd pitzDaily && blockMesh && decomposePar && mpirun --oversubscribe -np 4 simpleFoamTest -parallel && cd -
+
+#cd python && mpirun --oversubscribe -np 4 coverage run runScript.py && cd - 
+#cd python && coverage combine && coverage xml && cp -r coverage.xml ../ && cd -
