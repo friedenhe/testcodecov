@@ -39,6 +39,7 @@ jobs:
     - uses: danielealbano/lcov-action@v3
       with:
         gcov_path: /usr/bin/gcov-7
+        remove_patterns: 3rdparty,tests
     - name: Create the docker container and run the tests
       run: |
         docker pull dafoam/opt-packages:${{env.DOCKER_TAG}}
