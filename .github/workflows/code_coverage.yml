@@ -38,7 +38,7 @@ jobs:
         platform: x64
     - uses: danielealbano/lcov-action@v3
       with:
-        gcov_tool: /usr/bin/gcov-7
+        gcov_path: /usr/bin/gcov-7
     - name: Create the docker container and run the tests
       run: |
         docker pull dafoam/opt-packages:${{env.DOCKER_TAG}}
