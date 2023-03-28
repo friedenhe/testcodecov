@@ -34,7 +34,7 @@ jobs:
         python-version: 3.8
     - uses: egor-tensin/setup-gcc@v1
       with:
-        version: 7.5
+        version: 7
         platform: x64
     - name: Create the docker container and run the tests
       run: |
