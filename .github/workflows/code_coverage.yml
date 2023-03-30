@@ -22,15 +22,13 @@ jobs:
         testConfig: [incompressible, compressible]
         include:
           - testConfig: incompressible
-            args: 'incompressible'
+            args: 'solid'
           - testConfig: compressible
-            args: 'incompressible'
+            args: 'solid'
 
     steps:
     - uses: actions/checkout@v2
     - uses: codecov/codecov-action@v3
-      with:
-        verbose: true
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8
@@ -39,14 +37,17 @@ jobs:
         docker pull dafoam/opt-packages:${{env.DOCKER_TAG}}
         docker run -i -d -u dafoamuser --name regtest -v $GITHUB_WORKSPACE:${{env.DOCKER_MOUNT_DIR}} dafoam/opt-packages:${{env.DOCKER_TAG}} /bin/bash
         docker exec -i regtest /bin/bash -c "rm -rf ${{env.DOCKER_WORKING_DIR}} && cp -r ${{env.DOCKER_MOUNT_DIR}} ${{env.DOCKER_WORKING_DIR}}"
-        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && pip install coverage"
+        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && pip install coverage && echo dafoamuser | sudo -S apt-get install lcov"
         docker exec regtest sed -i 's/-std=c++11/-std=c++11 -fprofile-arcs -ftest-coverage/g' ${{env.DOCKER_WORKING_DIR}}/src/adjoint/Make/options_Incompressible
         docker exec regtest sed -i 's/-std=c++11/-std=c++11 -fprofile-arcs -ftest-coverage/g' ${{env.DOCKER_WORKING_DIR}}/src/adjoint/Make/options_Compressible
         docker exec regtest sed -i 's/-std=c++11/-std=c++11 -fprofile-arcs -ftest-coverage/g' ${{env.DOCKER_WORKING_DIR}}/src/adjoint/Make/options_Solid
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && ./Allmake ${{matrix.args}}"
         docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && pip install ."
         docker exec -i -e DF_CHECK_COVERAGE=1 regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && ./Allrun ${{matrix.args}}"
-        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && coverage combine && coverage xml && echo dafoamuser | sudo -S cp -r coverage.xml ${{env.DOCKER_MOUNT_DIR}}/"
-        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/src/adjoint && cp -r ../include ./Make/linux*/DASolver/ && cp -r ../include ./Make/linux*/ && echo dafoamuser | sudo -S cp -r ../adjoint/* ${{env.DOCKER_MOUNT_DIR}}/"
-        bash <(curl -s https://codecov.io/bash)
+        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/tests && coverage combine && coverage xml && echo dafoamuser | sudo -S cp -r coverage.xml ${{env.DOCKER_WORKING_DIR}}/"
+        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}}/src/adjoint && cp -r ../include ./Make/linux*/DASolver/ && cp -r ../include ./Make/linux*/"
+        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && cd ${{env.DOCKER_WORKING_DIR}} && lcov --capture --directory . --output-file coverage.info && echo dafoamuser | sudo -S cp -r coverage.info ${{env.DOCKER_WORKING_DIR}}/"
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov
         
