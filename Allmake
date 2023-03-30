@@ -15,7 +15,6 @@ else
   argm="$1"
 fi
 
-cd src/adjoint && ./Allmake $argm && cd -
-cd src/pyDASolvers && ./Allmake $argm && cd -
-cd src/utilities/coloring && ./Allmake $argm && cd -
-cd src/utilities/postProcessing && ./Allmake $argm && cd -
+cd src/adjoint && ./Allmake solid && cd -
+cd src/pyDASolvers && ./Allmake solid && cd -
+pip install .
