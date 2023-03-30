@@ -13,4 +13,6 @@ else
   wget https://github.com/dafoam/files/releases/download/v1.0.0/input.tar.gz --no-check-certificate
 fi
 
+tar -xvf input.tar.gz
+
 mpirun --oversubscribe -np 4 coverage run runTests_DALaplacianFoam.py
