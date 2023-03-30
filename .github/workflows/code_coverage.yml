@@ -37,7 +37,7 @@ jobs:
         docker pull dafoam/opt-packages:${{env.DOCKER_TAG}}
         docker run -i -d -u dafoamuser --name regtest -v $GITHUB_WORKSPACE:${{env.DOCKER_MOUNT_DIR}} dafoam/opt-packages:${{env.DOCKER_TAG}} /bin/bash
         docker exec -i regtest /bin/bash -c "rm -rf ${{env.DOCKER_WORKING_DIR}} && cp -r ${{env.DOCKER_MOUNT_DIR}} ${{env.DOCKER_WORKING_DIR}}"
-        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && pip install coverage && echo dafoamuser | sudo -S apt-get install lcov"
+        docker exec -i regtest /bin/bash -c ". ${{env.DOCKER_ENV_FILE}} && pip install coverage && echo dafoamuser | sudo -S apt-get -y install lcov"
         docker exec regtest sed -i 's/-std=c++11/-std=c++11 -fprofile-arcs -ftest-coverage/g' ${{env.DOCKER_WORKING_DIR}}/src/adjoint/Make/options_Incompressible
         docker exec regtest sed -i 's/-std=c++11/-std=c++11 -fprofile-arcs -ftest-coverage/g' ${{env.DOCKER_WORKING_DIR}}/src/adjoint/Make/options_Compressible
         docker exec regtest sed -i 's/-std=c++11/-std=c++11 -fprofile-arcs -ftest-coverage/g' ${{env.DOCKER_WORKING_DIR}}/src/adjoint/Make/options_Solid
